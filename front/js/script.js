@@ -3,25 +3,43 @@ fetch("http://localhost:3000/api/products")
   .then((data) => addProducts(data) )
    
 
-  function addProducts(donne) {
-    const id = donne[0]._id
-    const imageUrl = donne[0].imageUrl
-    const altTxt = donne[0].altTxt
-    const name = donne[0].name
-    const description = donne[0].description
+  function addProducts(data) {
+    // const _id = date[0]._id
+    // const imageUrl = date[0].imageUrl
+    // const altTxt = date[0].altTxt
+    // const name = date[0].name
+    // const description = date[0].description
 
 
-    const image = makeImage(imageUrl, altTxt)
-    const link = makeLink(id)
-    const article = makeArticle()
+// for (let i = 0; i < data.length; i++) {
+
+//   console.log("canap", i, data[i])
+// }
+
+data.forEach((kanap) => {
+  
+    const { _id, imageUrl, altTxt, name, description } = kanap
+    const link = makeLink(_id)
+    const article = document.createElement("article")
+    const image = makeImage(imageUrl, altTxt)   
     const h3 = makeH3(name)
     const p = makeParagraf(description)
 
-    article.append(image)
-    article.append(h3)
-    article.append(p)   
+    appendTout(article, [image, h3, p])  
     append(link, article)
 
+  })
+}
+
+  function appendTout(article, array) {
+   array.forEach((item) => {
+    article.append(item)
+   }
+   
+   )
+    // article.append(image)
+    // article.append(h3)
+    // article.append(p)   
   }
 
   function makeLink(id) {
@@ -34,12 +52,10 @@ fetch("http://localhost:3000/api/products")
     const items = document.querySelector("#items") 
     if (items !=null) {
     items.append(link)
-    link.append(article)
-    
+    link.append(article)    
     }
 
   }
-
  
   function makeImage(imageUrl, altTxt) {
   const image = document.createElement("img")
@@ -50,11 +66,6 @@ fetch("http://localhost:3000/api/products")
   return image  
 }
 
-function makeArticle() {
-  const article = document.createElement("article")
-  
-  return article
-}
 
   function makeH3(name) {
   const h3 = document.createElement("h3")
