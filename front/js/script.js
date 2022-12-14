@@ -4,11 +4,11 @@ fetch("http://localhost:3000/api/products")
    
 
   function addProducts(data) {
-    // const _id = date[0]._id
-    // const imageUrl = date[0].imageUrl
-    // const altTxt = date[0].altTxt
-    // const name = date[0].name
-    // const description = date[0].description
+//     const _id = date[0]._id
+//     const imageUrl = date[0].imageUrl
+//     const altTxt = date[0].altTxt
+//     const name = date[0].name
+//     const description = date[0].description
 
 
 // for (let i = 0; i < data.length; i++) {
@@ -19,6 +19,8 @@ fetch("http://localhost:3000/api/products")
 data.forEach((kanap) => {
   
     const { _id, imageUrl, altTxt, name, description } = kanap
+
+    
     const link = makeLink(_id)
     const article = document.createElement("article")
     const image = makeImage(imageUrl, altTxt)   
@@ -26,20 +28,20 @@ data.forEach((kanap) => {
     const p = makeParagraf(description)
 
     appendTout(article, [image, h3, p])  
-    append(link, article)
+    appendChild(link, article)
 
   })
 }
 
   function appendTout(article, array) {
    array.forEach((item) => {
-    article.append(item)
+    article.appendChild(item)
    }
    
    )
-    // article.append(image)
-    // article.append(h3)
-    // article.append(p)   
+    // article.appendChild(image)
+    // article.appendChild(h3)
+    // article.appendChild(p)   
   }
 
   function makeLink(id) {
@@ -48,11 +50,11 @@ data.forEach((kanap) => {
     return link
   }
 
-  function append(link, article) {
+  function appendChild(link, article) {
     const items = document.querySelector("#items") 
     if (items !=null) {
-    items.append(link)
-    link.append(article)    
+    items.appendChild(link)
+    link.appendChild(article)    
     }
 
   }
