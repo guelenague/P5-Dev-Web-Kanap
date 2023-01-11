@@ -1,6 +1,9 @@
 const cart = []
 recuperItems()
+
 cart.forEach((item) => montrerItem(item))
+const form = document.querySelector(".cart__order__form")
+form.addEventListener('submit', submitForm)
 // "_id": "107fb5b75607497b96722bda5b504926",
 // "name": "Kanap Sinopé",
 // "price": 1849,
@@ -13,6 +16,7 @@ function recuperItems() {
     for (let i = 0; i < numberKanap; i++){
     const item = localStorage.getItem(localStorage.key(i))||""
     const itemObject = JSON.parse(item)
+    // recuperer le prix depuis le serveur et l' ajouter a itemObject
     cart.push(itemObject)
 }
 }
@@ -24,11 +28,11 @@ function montrerItem(item) {
     const cardItemContent = makeCartContent(item)
     article.appendChild(cardItemContent)
     montrerArticle(article) 
-    monterTotalQuantity() 
+    montrerTotalQuantity() 
     montrerTotalPrice()  
 }
 
-function monterTotalQuantity() {
+function montrerTotalQuantity() {
     const totalQuantity = document.querySelector("#totalQuantity") 
     const total = cart.reduce((total, item) => total + item.quantity, 0)
     totalQuantity.textContent = total
@@ -39,7 +43,6 @@ function montrerTotalPrice() {
     const total = cart.reduce((total, item) => total + item.price * item.quantity, 0)
     totalPrice.textContent = total
     }
-
 
 function makeCartContent(item) {
     const cardItemContent = document.createElement("div")
@@ -65,20 +68,29 @@ function makeSettings(item) {
 function addDeleteToSettings(settings, item) {
     const div = document.createElement("div")
     div.classList.add("cart__item__content__settings__delete")
+    div.addEventListener("click", () => deleteItem(item))
+    
+    
     const p = document.createElement("p")
     p.textContent = "Suppp"
-    div.addEventListener("click", () => deleteItem(item))
     div.appendChild(p)
     settings.appendChild(div)
-}
+    // div.addEventListener("click", (e) => {
+    //     const btn = e.target;
+    //     const article = btn.closest('.cart__item')
+    //     article.remove()
+    //     deleteItem(item)
+
+    }
 
 function deleteItem(item) {
     const itemToDelete = cart.findIndex(
-        (product) => product.id ===item.id && product.color === item.color
+        (product) => product.id === item.id && product.color === item.color
     )
     cart.splice(itemToDelete, 1)
-    monterTotalQuantity() 
+    montrerTotalQuantity() 
     montrerTotalPrice()  
+
     deleteData(item)
     deleteArticle(item)
     
@@ -87,9 +99,9 @@ function deleteItem(item) {
 function deleteArticle(item) {
 
     const articleToDelete = document.querySelector(
-        `article[data-id-"${item.id}"][data-color-"${item.color}"]`
-    )
-    articleToDelete.remove()
+        `article[data-id="${item.id}"][data-color="${item.color}"]`
+      )
+      articleToDelete.remove()
     
 }
 
@@ -99,40 +111,57 @@ function addQuantityToSettings(settings, item) {
     const p = document.createElement("p")
     p.textContent ="Qté"
     quantity.appendChild(p)
+    // const inputQuantity = document.createElement("input");
+    // inputQuantity.type = "number";
+    // inputQuantity.classList.add("itemQuantity");
+    // inputQuantity.name = "itempQuantity";
+    // inputQuantity.min = "1";
+    // inputQuantity.max = "100";
+    // inputQuantity.value = item.quantity;
+    // inputQuantity.addEventListener("change", () =>
+    //   updatePQ(produit.addId, inputQuantity.value)
+    // );
+    
+
     const input = document.createElement("input")
-    input.name = "itemQuantity"
     input.type = "number"
     input.classList.add("itemQuantity")
+    input.name = "itemQuantity"
     input.min = "1"
     input.max = "100"
     input.value = item.quantity
-    input.addEventListener("input", () => updatePQ(item.id, input.value, item))
+    
+    input.addEventListener("change", () => updatePQ(item.id, input.value, item))
 
     quantity.appendChild(input)
     settings.appendChild(quantity)
 }
 
 function updatePQ(id, newValue, item) {
-    const itemToUpdate = cart.find((item) => item.id ===id)
+    const itemToUpdate = cart.find((item) => item.id === id)
     itemToUpdate.quantity = Number(newValue)
     item.quantity = itemToUpdate.quantity
-    monterTotalQuantity() 
+    montrerTotalQuantity() 
     montrerTotalPrice()  
-    deleteData(item)
+
+    saveData(item)
+
+
 }
 
 function deleteData(item) {
     const key = `${item.id}-${item.color}`
-  localStorage.removeItem (key)
+    localStorage.removeItem(key)
     
 }
 
 function saveData(item) {
   const dataToSave = JSON.stringify(item)
   const key = `${item.id}-${item.color}`
-  localStorage.setItem (key, dataToSave)
+  localStorage.setItem(key, dataToSave)
 }
-
+/*Fonction qui permet de donner des enfants au parent #items afin
+de le rendre visible dans le code html dans le DOM*/
 function makeDescription(item){
     const description = document.createElement("div")
     description.classList.add("cart__item__content__description")
@@ -175,8 +204,265 @@ function makeImageDiv(item) {
     image.alt = item.altTxt
     div.appendChild(image)
     return div
+}
+
+function submitForm(e) {
+    e.preventDefault()
+    if (cart.length === 0) {
+        alert("Ahtung")
+        return
+    }
+    if (validateForm()) return
+    if (validateEmail()) return
+   
+
+    const body = makeBody()
+    fetch('http://localhost:3000/api/products/order', {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: {
+        "Content-type": 'application/json'
+        // "Accept": 'application/json'
+    // "Access-Control-Allow-Origin": "*"
+}
+    })
+
+    .then((res) => {
+        return res.json();
+      })
+
+    .then((data) => {
+      const orderId = data.orderId
+      document.location.href = "confirmation.html"  + "?orderId=" + orderId;
+    //   window.location.href = "confirmation.html" + "?orderId=" + orderId
+      
+    })
+    .catch((err) => console.error(err))
+
+//   console.log(data)
+}
+
+// requetePostVersLapi.then(async(res)=>
+// {
+          
+//             let numeroDeCommande = await res.json()
+//         // If the request is accepted and the form send then redirect to confirmation.html
+//             if(res.status == 201)
+//             {
+//                   window.location.href=`confirmation.html?orderId=${numeroDeCommande.orderId}`
+//             // window.location.href=`confirmation.html?orderId=${numeroDeCommande.orderId}`=*
+//       }
+// // Quand le formulaire est envoyé...
+// myForm.addEventListener('submit',(e)=>
+// {
+
+ 
+//       const firstNameInput = document.getElementById('firstName')
+//       const lastNameInput = document.getElementById('lastName')
+//       const addressInput = document.getElementById('address')
+ 
+//       const cityInput = document.getElementById('city')
+//       const emailInput = document.getElementById('email')
+      
+      
+   
+//       let RegexName =  new RegExp(/^[a-zA-z-\s]+$/)
+//       let RegexCity =  new RegExp(/^[a-zA-z-\s]+$/)
+//       let RegexAdress = new RegExp(/^[a-zA-z-\s]+$/)
+//       let RegexEmail = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)
+
+      
+        
+              
+
+//       const checkFirstName = function ()
+//       {
+//           const firstNameErrorMsg = document.getElementById('firstNameErrorMsg')
+
+//             if(RegexName.test(firstNameInput.value) === false)
+//             {
+//                   firstNameErrorMsg.innerHTML = "Veuillez uniquement saisir des lettres"
+//                    e.preventDefault()
+//             }
+
+//             else if (RegexName.test(firstNameInput.value) === true){
+//                   firstNameErrorMsg.innerHTML = " ";
+//             }
+//       }
+  
+
+
+//       const checkLastName = function()
+//       {
+//             const lastNameErrorMsg = document.getElementById('lastNameErrorMsg')
+
+//            if(RegexName.test(lastNameInput.value) === false)
+//            {
+//             lastNameErrorMsg.innerHTML = "Veuillez uniquement saisir des lettres"
+//             e.preventDefault()
+
+//            }
+
+//            else if (RegexName.test(lastNameInput.value) === true){
+//                  lastNameErrorMsg.innerHTML = " ";
+//            }
+
+//       }
+      
+
+
+//       const checkAddress = function ()
+//       {
+//             const addressErrorMsg = document.getElementById('addressErrorMsg')
+
+//             if(RegexAdress.test(addressInput.value) === false)
+//             {
+//                   addressErrorMsg.innerHTML = "L'adresse saisi est incorrecte"
+//                   e.preventDefault()
+//             }
+
+//             else if(RegexAdress.test(addressInput.value) === true){
+//                   addressErrorMsg.innerHTML = "";
+//             }
+            
+          
+//       }
+
+
+
+//       const checkCity = function () 
+//       {
+//             const cityErrorMsg= document.getElementById('cityErrorMsg')
+
+//             if(RegexCity.test(cityInput.value) === false)
+//             {
+//                   cityErrorMsg.innerHTML = "Veuillez saisir un nom de ville correcte"
+//                   e.preventDefault()
+//             }
+
+//             else if(RegexCity.test(cityInput.value) === true){
+//                   cityErrorMsg.innerHTML = "";
+//             }
+     
+          
+//       }
+
+     
+
+//       const checkEmail = function () 
+//       {
+//             const emailErrorMsg= document.getElementById('emailErrorMsg')
+
+//             if(RegexEmail.test(emailInput.value) === false)
+//             {
+//                   emailErrorMsg.innerHTML = "Veuillez saisir une adresse mail correcte"
+//                   e.preventDefault()
+//             }
+
+//             else if(RegexCity.test(emailInput.value) === true){
+//                   emailErrorMsg.innerHTML = "";
+//             }
+    
+//       }
+
+     
+
+
+//       checkFirstName()
+//       checkLastName()
+//       checkAddress()
+//       checkCity()  
+//       checkEmail()  
+   
+     
+// }) 
+
+           
+
+// /**END OF FORMULAIRE */
+
+// })
+
+
+
+function validateEmail() {
+    const email = document.querySelector("#email").value
+    const regex = /^[A-Za-z0-9+_.-]+@(.+)$/   
+        if (regex.test(email) === false) {
+            alert("Email")
+            return true
+        }
+        return false
+    
+}
+
+function validateForm() {
+    const form = document.querySelector(".cart__order__form")
+    const inputs = form.querySelectorAll("input")
+    const reg = new RegExp(/^[a-zA-z-\s]+$/);
+    let RegexName =  new RegExp(/^[a-zA-z-\s]+$/)
+    
+    //       let RegexCity =  new RegExp(/^[a-zA-z-\s]+$/)
+    //       let RegexAdress = new RegExp(/^[a-zA-z-\s]+$/)
+    //       let RegexEmail = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)
+
+ 
+
+    inputs.forEach((input) => {
+        if (input.id !== "email") {
+            const div = input.parentElement;
+            const errorContainer = div.querySelector("p")
+            console.log(errorContainer)
+            if (!reg.test(input.value)) {
+                if (errorContainer) {
+                    errorContainer.innerHTML = "Remplissez tout";
+                }
+                return true
+            }
+            errorContainer.innerHTML = "";
+            return false
+        }
+        
+    })
+}
+
+function makeBody() {
+    const form = document.querySelector(".cart__order__form")
+    const firstName = form.elements.firstName.value
+    const lastName = form.elements.lastName.value
+    const address = form.elements.address.value
+    const city = form.elements.city.value
+    const email = form.elements.email.value
+    
+    const body = {
+        contact : {
+            firstName: firstName,
+            lastName: lastName,
+            address: address,
+            city: city,
+            email: email
+     },
+
+     products: getIds()
+    
+    //  products: ["107fb5b75607497b96722bda5b504926"]
+      }
+      return body
+}
+
+function getIds() {
+    const numberProducts = localStorage.length
+    const ids = []
+    for (let i = 0; i < numberProducts; i++) {
+        const key = localStorage.key(i)
+        const id = key.split("-")[0]
+        ids.push(id)
+    }
+    return ids
     
 }
 
 
-
+// function redirect() {
+//     window.location.href = "confirmation.html"
+//   }

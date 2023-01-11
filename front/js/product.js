@@ -1,3 +1,5 @@
+/*window location search =>> l'url : de ?id,  id pour appeller API avec 
+fletch sur la page Product*/
 const queryString = window.location.search
 const urlParams = new URLSearchParams(queryString)
 const id = urlParams.get("id")
@@ -5,7 +7,7 @@ if (id != null) {
   let itemPrice = 0
   let imgUrl, altText, aName 
 }
-
+/*fonction fletch:+ la var de l'id obtenue grâce à URLSearchParams()*/
 
 fetch(`http://localhost:3000/api/products/${id}`)
   .then((reponse) => reponse.json())
@@ -80,7 +82,7 @@ function makeColors(colors) {
      })
     }
   }
-
+/*var bouton "ajouter au panier"*/
   const button = document.querySelector("#addToCart")   
   button.addEventListener("click", displayClick)  
 
@@ -92,9 +94,10 @@ function displayClick() {
   restoreCarte(color, quantity)   
   redirect()
 }
-  
+  // /*création d'un objet: données à stocker dans le
+      // localStorage*/
   function restoreCarte(color, quantity) {
-    const key = `${item.id}-${item.color}`
+    const key = `${id}-${color}`
     const data = {
       id: id,
       name: aName,
@@ -116,7 +119,7 @@ function displayClick() {
     } 
   }
  
-
+//redirection vers le pannier
   function redirect() {
     window.location.href = "cart.html"
   }

@@ -28,7 +28,7 @@ data.forEach((kanap) => {
     const p = makeParagraf(description)
 
     appendTout(article, [image, h3, p])  
-    appendChild(link, article)
+    appendArticle(link, article)
 
   })
 }
@@ -50,7 +50,7 @@ data.forEach((kanap) => {
     return link
   }
 
-  function appendChild(link, article) {
+  function appendArticle(link, article) {
     const items = document.querySelector("#items") 
     if (items !=null) {
     items.appendChild(link)
