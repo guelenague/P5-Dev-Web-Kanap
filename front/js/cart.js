@@ -11,15 +11,49 @@ form.addEventListener('submit', submitForm)
 // "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
 // "altTxt": "Photo d'un canapé bleu, deux places"
 
+ //création d'une loop pour récupérer les données stockées dans le localStorage
+//*---------------------------------------------------------------------
+//* Récupération/Ajout des données non-stockées dans le Local Storage
+//*---------------------------------------------------------------------
+
+
 function recuperItems() {
     const numberKanap = localStorage.length
     for (let i = 0; i < numberKanap; i++){
     const item = localStorage.getItem(localStorage.key(i))||""
+     /*avec JSON parse au lieu d'avoir la liste de produit dans des string, 
+    cela va permetre d'avoir un vrai objet json*/
     const itemObject = JSON.parse(item)
-    // recuperer le prix depuis le serveur et l' ajouter a itemObject
-    cart.push(itemObject)
+    console.log(itemObject)
+
+     // recuperer le prix depuis le serveur et l' ajouter a itemObject
+     /*item.price * item.quantity.toString().replace(/00/, "")*/
+    //  getItem(price)
+
+    window.addEventListener('storage', (event) => console.log(event));
+     // cette fonction  récolte chaque objet contenu dans itemObject
+     cart.push(itemObject)
+   
+    // const nomEntreprise = window.localStorage.getItem("nom");
+    // setItem(key, value) – записать пару ключ/значение
+
+    // getItem(key) – получает значение по ключу (key);
+    // setItem(key, value) – добавляет ключ (key) со значением value (если в хранилище уже есть этот ключ, то в этом случае будет просто обновлено его значение);
+    // removeItem(key) – удаляет ключ (key);
+    // clear() – очищает всё хранилище;
+    // key(index) – получает ключ по индексу (в основном используется в операциях перебора);
+    // length – количество ключей в хранилище;
+
+    // getItem(key) – получить данные по ключу key
+
+    // removeItem(key) – удалить значение по ключу key
+    // localStorage.removeItem("price");
+   
 }
 }
+//*--------------------------------------------------------------
+//* Affichage du Panier
+//* --------------------------------------------------------------
 
 function montrerItem(item) {
     const article = makeArticle(item)    
@@ -27,11 +61,16 @@ function montrerItem(item) {
     article.appendChild(imageDiv)
     const cardItemContent = makeCartContent(item)
     article.appendChild(cardItemContent)
+
+    // Appel des fonctions pour écoute : 
+    // Modification de la quantité
+  // Suppression d'un produit
+// Calcul total produits/prix panier
     montrerArticle(article) 
     montrerTotalQuantity() 
     montrerTotalPrice()  
 }
-
+//Création d'une variabe pour afficher le nombre d'article dans le panier
 function montrerTotalQuantity() {
     const totalQuantity = document.querySelector("#totalQuantity") 
     const total = cart.reduce((total, item) => total + item.quantity, 0)
@@ -41,6 +80,7 @@ function montrerTotalQuantity() {
 function montrerTotalPrice() {
     const totalPrice = document.querySelector("#totalPrice")
     const total = cart.reduce((total, item) => total + item.price * item.quantity, 0)
+    item.price * item.quantity.toString().replace(/00/, "")
     totalPrice.textContent = total
     }
 
@@ -215,7 +255,9 @@ function submitForm(e) {
     if (validateForm()) return
     if (validateEmail()) return
    
-
+//*------------------------------------------------------------------------
+//* FETCH | Récupération et Transmission des données de l'API
+//*------------------------------------------------------------------------ 
     const body = makeBody()
     fetch('http://localhost:3000/api/products/order', {
     method: "POST",
@@ -232,7 +274,10 @@ function submitForm(e) {
       })
 
     .then((data) => {
+        console.log(data)
+        localStorage.clear()
       const orderId = data.orderId
+    //   localStorage.setItem("orderId", data.orderId)
       document.location.href = "confirmation.html"  + "?orderId=" + orderId;
     //   window.location.href = "confirmation.html" + "?orderId=" + orderId
       
@@ -426,6 +471,10 @@ function validateForm() {
     })
 }
 
+//*--------------------------------------------------------------
+//* Construction du Formulaire de commande
+//*--------------------------------------------------------------
+
 function makeBody() {
     const form = document.querySelector(".cart__order__form")
     const firstName = form.elements.firstName.value
@@ -433,7 +482,7 @@ function makeBody() {
     const address = form.elements.address.value
     const city = form.elements.city.value
     const email = form.elements.email.value
-    
+      // Object respectant les attentes de l'API
     const body = {
         contact : {
             firstName: firstName,
@@ -455,6 +504,7 @@ function getIds() {
     const ids = []
     for (let i = 0; i < numberProducts; i++) {
         const key = localStorage.key(i)
+        
         const id = key.split("-")[0]
         ids.push(id)
     }
