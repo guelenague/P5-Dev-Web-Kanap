@@ -4,16 +4,10 @@ recuperItems()
 cart.forEach((item) => montrerItem(item))
 const form = document.querySelector(".cart__order__form")
 form.addEventListener('submit', submitForm)
-// "_id": "107fb5b75607497b96722bda5b504926",
-// "name": "Kanap Sinopé",
-// "price": 1849,
-// "imageUrl": "http://localhost:3000/images/kanap01.jpeg",
-// "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-// "altTxt": "Photo d'un canapé bleu, deux places"
 
- //création d'une loop pour récupérer les données stockées dans le localStorage
+ 
 //*---------------------------------------------------------------------
-//* Récupération/Ajout des données non-stockées dans le Local Storage
+//* création d'une loop pour récupérer des données non-stockées dans le Local Storage
 //*---------------------------------------------------------------------
 
 
@@ -24,31 +18,11 @@ function recuperItems() {
      /*avec JSON parse au lieu d'avoir la liste de produit dans des string, 
     cela va permetre d'avoir un vrai objet json*/
     const itemObject = JSON.parse(item)
-    console.log(itemObject)
-
+    
      // recuperer le prix depuis le serveur et l' ajouter a itemObject
-     /*item.price * item.quantity.toString().replace(/00/, "")*/
-    //  getItem(price)
-
-    window.addEventListener('storage', (event) => console.log(event));
+     
      // cette fonction  récolte chaque objet contenu dans itemObject
      cart.push(itemObject)
-   
-    // const nomEntreprise = window.localStorage.getItem("nom");
-    // setItem(key, value) – записать пару ключ/значение
-
-    // getItem(key) – получает значение по ключу (key);
-    // setItem(key, value) – добавляет ключ (key) со значением value (если в хранилище уже есть этот ключ, то в этом случае будет просто обновлено его значение);
-    // removeItem(key) – удаляет ключ (key);
-    // clear() – очищает всё хранилище;
-    // key(index) – получает ключ по индексу (в основном используется в операциях перебора);
-    // length – количество ключей в хранилище;
-
-    // getItem(key) – получить данные по ключу key
-
-    // removeItem(key) – удалить значение по ключу key
-    // localStorage.removeItem("price");
-   
 }
 }
 //*--------------------------------------------------------------
@@ -80,7 +54,7 @@ function montrerTotalQuantity() {
 function montrerTotalPrice() {
     const totalPrice = document.querySelector("#totalPrice")
     const total = cart.reduce((total, item) => total + item.price * item.quantity, 0)
-    item.price * item.quantity.toString().replace(/00/, "")
+    
     totalPrice.textContent = total
     }
 
@@ -115,13 +89,14 @@ function addDeleteToSettings(settings, item) {
     p.textContent = "Suppp"
     div.appendChild(p)
     settings.appendChild(div)
-    // div.addEventListener("click", (e) => {
-    //     const btn = e.target;
-    //     const article = btn.closest('.cart__item')
-    //     article.remove()
-    //     deleteItem(item)
+    div.addEventListener("click", (e) => {
+        const btn = e.target;
+        const article = btn.closest('.cart__item')
+        article.remove()
+        deleteItem(item)
 
-    }
+    })
+}
 
 function deleteItem(item) {
     const itemToDelete = cart.findIndex(
@@ -151,18 +126,7 @@ function addQuantityToSettings(settings, item) {
     const p = document.createElement("p")
     p.textContent ="Qté"
     quantity.appendChild(p)
-    // const inputQuantity = document.createElement("input");
-    // inputQuantity.type = "number";
-    // inputQuantity.classList.add("itemQuantity");
-    // inputQuantity.name = "itempQuantity";
-    // inputQuantity.min = "1";
-    // inputQuantity.max = "100";
-    // inputQuantity.value = item.quantity;
-    // inputQuantity.addEventListener("change", () =>
-    //   updatePQ(produit.addId, inputQuantity.value)
-    // );
-    
-
+   
     const input = document.createElement("input")
     input.type = "number"
     input.classList.add("itemQuantity")
@@ -185,8 +149,6 @@ function updatePQ(id, newValue, item) {
     montrerTotalPrice()  
 
     saveData(item)
-
-
 }
 
 function deleteData(item) {
@@ -249,11 +211,12 @@ function makeImageDiv(item) {
 function submitForm(e) {
     e.preventDefault()
     if (cart.length === 0) {
-        alert("Ahtung")
+        alert("Veuillez choisir kanap")
         return
     }
-    if (validateForm()) return
+    
     if (validateEmail()) return
+    if (validateForm()) return
    
 //*------------------------------------------------------------------------
 //* FETCH | Récupération et Transmission des données de l'API
@@ -269,189 +232,41 @@ function submitForm(e) {
 }
     })
 
-    .then((res) => {
-        return res.json();
-      })
+     .then((res) => res.json())
 
     .then((data) => {
-        console.log(data)
-        localStorage.clear()
+        // console.log(data)
+        // localStorage.clear()
       const orderId = data.orderId
     //   localStorage.setItem("orderId", data.orderId)
-      document.location.href = "confirmation.html"  + "?orderId=" + orderId;
-    //   window.location.href = "confirmation.html" + "?orderId=" + orderId
+    //   document.location.href = "confirmation.html"  + "?orderId=" + orderId;
+      window.location.href = "confirmation.html" + "?orderId=" + orderId
       
     })
     .catch((err) => console.error(err))
-
-//   console.log(data)
 }
-
-// requetePostVersLapi.then(async(res)=>
-// {
-          
-//             let numeroDeCommande = await res.json()
-//         // If the request is accepted and the form send then redirect to confirmation.html
-//             if(res.status == 201)
-//             {
-//                   window.location.href=`confirmation.html?orderId=${numeroDeCommande.orderId}`
-//             // window.location.href=`confirmation.html?orderId=${numeroDeCommande.orderId}`=*
-//       }
-// // Quand le formulaire est envoyé...
-// myForm.addEventListener('submit',(e)=>
-// {
-
- 
-//       const firstNameInput = document.getElementById('firstName')
-//       const lastNameInput = document.getElementById('lastName')
-//       const addressInput = document.getElementById('address')
- 
-//       const cityInput = document.getElementById('city')
-//       const emailInput = document.getElementById('email')
-      
-      
-   
-//       let RegexName =  new RegExp(/^[a-zA-z-\s]+$/)
-//       let RegexCity =  new RegExp(/^[a-zA-z-\s]+$/)
-//       let RegexAdress = new RegExp(/^[a-zA-z-\s]+$/)
-//       let RegexEmail = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)
-
-      
-        
-              
-
-//       const checkFirstName = function ()
-//       {
-//           const firstNameErrorMsg = document.getElementById('firstNameErrorMsg')
-
-//             if(RegexName.test(firstNameInput.value) === false)
-//             {
-//                   firstNameErrorMsg.innerHTML = "Veuillez uniquement saisir des lettres"
-//                    e.preventDefault()
-//             }
-
-//             else if (RegexName.test(firstNameInput.value) === true){
-//                   firstNameErrorMsg.innerHTML = " ";
-//             }
-//       }
-  
-
-
-//       const checkLastName = function()
-//       {
-//             const lastNameErrorMsg = document.getElementById('lastNameErrorMsg')
-
-//            if(RegexName.test(lastNameInput.value) === false)
-//            {
-//             lastNameErrorMsg.innerHTML = "Veuillez uniquement saisir des lettres"
-//             e.preventDefault()
-
-//            }
-
-//            else if (RegexName.test(lastNameInput.value) === true){
-//                  lastNameErrorMsg.innerHTML = " ";
-//            }
-
-//       }
-      
-
-
-//       const checkAddress = function ()
-//       {
-//             const addressErrorMsg = document.getElementById('addressErrorMsg')
-
-//             if(RegexAdress.test(addressInput.value) === false)
-//             {
-//                   addressErrorMsg.innerHTML = "L'adresse saisi est incorrecte"
-//                   e.preventDefault()
-//             }
-
-//             else if(RegexAdress.test(addressInput.value) === true){
-//                   addressErrorMsg.innerHTML = "";
-//             }
-            
-          
-//       }
-
-
-
-//       const checkCity = function () 
-//       {
-//             const cityErrorMsg= document.getElementById('cityErrorMsg')
-
-//             if(RegexCity.test(cityInput.value) === false)
-//             {
-//                   cityErrorMsg.innerHTML = "Veuillez saisir un nom de ville correcte"
-//                   e.preventDefault()
-//             }
-
-//             else if(RegexCity.test(cityInput.value) === true){
-//                   cityErrorMsg.innerHTML = "";
-//             }
-     
-          
-//       }
-
-     
-
-//       const checkEmail = function () 
-//       {
-//             const emailErrorMsg= document.getElementById('emailErrorMsg')
-
-//             if(RegexEmail.test(emailInput.value) === false)
-//             {
-//                   emailErrorMsg.innerHTML = "Veuillez saisir une adresse mail correcte"
-//                   e.preventDefault()
-//             }
-
-//             else if(RegexCity.test(emailInput.value) === true){
-//                   emailErrorMsg.innerHTML = "";
-//             }
-    
-//       }
-
-     
-
-
-//       checkFirstName()
-//       checkLastName()
-//       checkAddress()
-//       checkCity()  
-//       checkEmail()  
-   
-     
-// }) 
-
-           
-
-// /**END OF FORMULAIRE */
-
-// })
-
-
 
 function validateEmail() {
     const email = document.querySelector("#email").value
-    const regex = /^[A-Za-z0-9+_.-]+@(.+)$/   
+    const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/  
         if (regex.test(email) === false) {
-            alert("Email")
+            alert("Veuillez saisir une adresse mail correcte")
             return true
         }
-        return false
-    
+        
+    return false
 }
 
 function validateForm() {
     const form = document.querySelector(".cart__order__form")
     const inputs = form.querySelectorAll("input")
-    const reg = new RegExp(/^[a-zA-z-\s]+$/);
-    let RegexName =  new RegExp(/^[a-zA-z-\s]+$/)
+    const reg = new RegExp(/^[a-zA-z-\s]+$/) 
     
-    //       let RegexCity =  new RegExp(/^[a-zA-z-\s]+$/)
-    //       let RegexAdress = new RegExp(/^[a-zA-z-\s]+$/)
-    //       let RegexEmail = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)
-
- 
+    let RegexName =  new RegExp(/^[a-zA-z-\s]+$/)
+    let RegexCity =  new RegExp(/^[a-zA-z-\s]+$/)
+    let RegexAdress = new RegExp(/^[a-zA-z-\s]+$/)
+    let RegexEmail = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)
+  
 
     inputs.forEach((input) => {
         if (input.id !== "email") {
@@ -460,14 +275,17 @@ function validateForm() {
             console.log(errorContainer)
             if (!reg.test(input.value)) {
                 if (errorContainer) {
-                    errorContainer.innerHTML = "Remplissez tout";
-                }
-                return true
+                    errorContainer.innerHTML = "Please remplissez tout";
+                   
+                }    
+                
+                return true  
             }
-            errorContainer.innerHTML = "";
-            return false
+
+            errorContainer.innerHTML = "coucou ";
+            return  false
         }
-        
+       
     })
 }
 
@@ -494,7 +312,6 @@ function makeBody() {
 
      products: getIds()
     
-    //  products: ["107fb5b75607497b96722bda5b504926"]
       }
       return body
 }
@@ -511,8 +328,3 @@ function getIds() {
     return ids
     
 }
-
-
-// function redirect() {
-//     window.location.href = "confirmation.html"
-//   }
