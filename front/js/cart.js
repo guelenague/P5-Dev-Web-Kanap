@@ -260,20 +260,22 @@ function validateEmail() {
 function validateForm() {
     const form = document.querySelector(".cart__order__form")
     const inputs = form.querySelectorAll("input")
-    const reg = new RegExp(/^[a-zA-z-\s]+$/) 
+    const reg = new RegExp(/^[0-9a-zA-Z-\s]+$/) 
     
     let RegexName =  new RegExp(/^[a-zA-z-\s]+$/)
     let RegexCity =  new RegExp(/^[a-zA-z-\s]+$/)
-    let RegexAdress = new RegExp(/^[a-zA-z-\s]+$/)
+    let RegexAdress = new RegExp(/^[0-9a-zA-Z-\s]+$/)
     let RegexEmail = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)
-  
+    let invalide = false
 
     inputs.forEach((input) => {
-        if (input.id !== "email") {
+        if (input.id !== "email" && input.id !== "order") {
             const div = input.parentElement;
             const errorContainer = div.querySelector("p")
             console.log(errorContainer)
             if (!reg.test(input.value)) {
+                console.log(input.value)
+                invalide = true
                 if (errorContainer) {
                     errorContainer.innerHTML = "Please remplissez tout";
                    
@@ -287,6 +289,7 @@ function validateForm() {
         }
        
     })
+    return invalide
 }
 
 //*--------------------------------------------------------------
