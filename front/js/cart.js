@@ -1,4 +1,4 @@
-const cart = []
+let cart = []
 recuperItems()
 
 cart.forEach((item) => montrerItem(item))
@@ -86,11 +86,13 @@ function addDeleteToSettings(settings, item) {
     
     
     const p = document.createElement("p")
-    p.textContent = "Suppp"
+    p.textContent = "Supprimer"
     div.appendChild(p)
     settings.appendChild(div)
     div.addEventListener("click", (e) => {
         const btn = e.target;
+         // Renvoie кнопку к .cart__item
+   
         const article = btn.closest('.cart__item')
         article.remove()
         deleteItem(item)
@@ -99,10 +101,13 @@ function addDeleteToSettings(settings, item) {
 }
 
 function deleteItem(item) {
-    const itemToDelete = cart.findIndex(
-        (product) => product.id === item.id && product.color === item.color
-    )
-    cart.splice(itemToDelete, 1)
+    // const itemToDelete = cart.findIndex(
+    //     (product) => product.id === item.id && product.color === item.color
+    // )
+    cart = cart.filter((product) => !(product.id === item.id && product.color === item.color))
+    
+    
+    // cart.splice(itemToDelete, 1)
     montrerTotalQuantity() 
     montrerTotalPrice()  
 
@@ -209,6 +214,9 @@ function makeImageDiv(item) {
 }
 
 function submitForm(e) {
+    //*------------------------------------------------------------------------
+//* e это чтоб он не обновлял стр
+//*------------------------------------------------------------------------ 
     e.preventDefault()
     if (cart.length === 0) {
         alert("Veuillez choisir kanap")
@@ -219,9 +227,12 @@ function submitForm(e) {
     if (validateForm()) return
    
 //*------------------------------------------------------------------------
-//* FETCH | Récupération et Transmission des données de l'API
+//* FETCHou Récupération et Transmission des données de l'API
 //*------------------------------------------------------------------------ 
     const body = makeBody()
+    //*------------------------------------------------------------------------
+//* посылание запроса.  является запросом ресурсов или данных API, requet post a toujours body
+//*------------------------------------------------------------------------
     fetch('http://localhost:3000/api/products/order', {
     method: "POST",
     body: JSON.stringify(body),
@@ -284,7 +295,7 @@ function validateForm() {
                 return true  
             }
 
-            errorContainer.innerHTML = "coucou ";
+            errorContainer.innerHTML = "ok";
             return  false
         }
        
